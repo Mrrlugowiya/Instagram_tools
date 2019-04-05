@@ -10,7 +10,7 @@ And this is collection of several developments that have been carried out so far
 ### Installation
 
 ```
-$ git clone https://github.com/mrrlugowiya/instagram-tools.git
+$ git clone https://github.com/masokky/instagram-tools.git
 $ cd instagram-tools
 $ node index.js
 ```
@@ -46,4 +46,4 @@ $ node index.js
 * FIXING & TESTING BY ZHE PENGUMBARA (@zhe_pengumbara)
 * CCOCOT.CO | BC0DE.NET | NAONLAH.NET | WingkoColi
 * SGB TEAM REBORN | Zerobyte.id | ccocot@bc0de.net
-* RMT by ZHE PENGUMBARA (@zhe_pengumbara)
+* RMT BY ZHE PENGUMBARA (@zhe_pengumbara)
