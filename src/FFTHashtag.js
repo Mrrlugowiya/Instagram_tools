@@ -136,7 +136,7 @@ const doMain = async (User, hastag, sleep, accountsPerDelay) => {
   }
   try {
     const ranhastag = hastag[Math.floor(Math.random() * hastag.length)];
-    var text = fs.readFileSync("./commentText.txt", "utf-8").split("|");
+    var text = fs.readFileSync("./src/commentText.txt", "utf-8").split("|");
     const feed = new Client.Feed.TaggedMedia(account.session, ranhastag);
     console.log(chalk`{cyan  [?] Try to Follow, Like and Comment All Account In Hashtag: #${ranhastag}}`);
     var cursor;
