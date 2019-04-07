@@ -8,54 +8,54 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 
 const question = [
-{
-  type:'input',
-  name:'username',
-  message:'[>] Insert Username:',
-  validate: function(value){
-    if(!value) return 'Can\'t Empty';
-    return true;
+  {
+    type: 'input',
+    name: 'username',
+    message: '[>] Insert Username:',
+    validate: function (value) {
+      if (!value) return 'Can\'t Empty';
+      return true;
+    }
+  },
+  {
+    type: 'password',
+    name: 'password',
+    message: '[>] Insert Password:',
+    mask: '*',
+    validate: function (value) {
+      if (!value) return 'Can\'t Empty';
+      return true;
+    }
+  },
+  {
+    type: 'input',
+    name: 'hastag',
+    message: '[>] Insert Hashtag (Without #):',
+    validate: function (value) {
+      if (!value) return 'Can\'t Empty';
+      return true;
+    }
+  },
+  {
+    type: 'input',
+    name: 'accountsPerDelay',
+    message: '[>] Number of Accounts per Delay:',
+    validate: function (value) {
+      value = value.match(/[0-9]/);
+      if (value) return true;
+      return 'Use Number Only!';
+    }
+  },
+  {
+    type: 'input',
+    name: 'sleep',
+    message: '[>] Insert Sleep (In MiliSeconds):',
+    validate: function (value) {
+      value = value.match(/[0-9]/);
+      if (value) return true;
+      return 'Delay is number';
+    }
   }
-},
-{
-  type:'password',
-  name:'password',
-  message:'[>] Insert Password:',
-  mask:'*',
-  validate: function(value){
-    if(!value) return 'Can\'t Empty';
-    return true;
-  }
-},
-{
-  type:'input',
-  name:'hastag',
-  message:'[>] Insert Hashtag (Without #):',
-  validate: function(value){
-    if(!value) return 'Can\'t Empty';
-    return true;
-  }
-},
-{
-  type:'input',
-  name:'accountsPerDelay',
-  message:'[>] Number of Accounts per Delay:',
-  validate: function(value){
-    value = value.match(/[0-9]/);
-    if (value) return true;
-    return 'Use Number Only!';
-  }
-},
-{
-  type:'input',
-  name:'sleep',
-  message:'[>] Insert Sleep (In MiliSeconds):',
-  validate: function(value){
-    value = value.match(/[0-9]/);
-    if (value) return true;
-    return 'Delay is number';
-  }
-}
 ]
 
 
@@ -66,18 +66,18 @@ const doLogin = async (params) => {
   try {
     await Client.Session.create(Device, Storage, params.username, params.password)
     const account = await session.getAccount();
-    return Promise.resolve({session,account});
+    return Promise.resolve({ session, account });
   } catch (err) {
-    return Promise.reject(err);
+    return err;
   }
 }
 
 const grabFollowers = async (session, id) => {
   const feed = new Client.Feed.AccountFollowers(session, id);
-  try{
+  try {
     feed.map = item => item.params;
     return Promise.resolve(feed.all());
-  }catch (e){
+  } catch (e) {
     return Promise.reject(err);
   }
 }
@@ -95,27 +95,27 @@ const doComment = async (session, id, text) => {
   try {
     await Client.Comment.create(session, id, text);
     return true;
-  } catch(e){
+  } catch (e) {
     return false;
   }
 }
 
 const doLike = async (session, id) => {
-  try{
+  try {
     await Client.Like.create(session, id);
     return true;
-  } catch(e) {
+  } catch (e) {
     return false;
   }
 }
 
 const doAction = async (session, params, text) => {
   const task = [
-  doFollow(session, params.account.id),
-  doLike(session, params.id),
-  doComment(session, params.id, text)
+    doFollow(session, params.account.id),
+    doLike(session, params.id),
+    doComment(session, params.id, text)
   ];
-  var [printFollow,printLike,printComment] = await Promise.all(task);
+  var [printFollow, printLike, printComment] = await Promise.all(task);
   printFollow = printFollow ? chalk`{bold.green Follow}` : chalk`{bold.red Follow}`;
   printComment = printComment ? chalk`{bold.green Comment}` : chalk`{bold.red Comment}`;
   printLike = printLike ? chalk`{bold.green Like}` : chalk`{bold.red Like}`;
@@ -123,25 +123,33 @@ const doAction = async (session, params, text) => {
 }
 
 const doMain = async (User, hastag, sleep, accountsPerDelay) => {
-  console.log(chalk`{yellow \n [?] Try to Login . . .}`)
-  var account = await doLogin(User);
-  console.log(chalk`{green  [!] Login Success!}`)
   try {
-  const ranhastag = hastag[Math.floor(Math.random() * hastag.length)];
-  var text = fs.readFileSync("./commentText.txt","utf-8").split("|");
-  const feed = new Client.Feed.TaggedMedia(account.session, ranhastag);
-  console.log(chalk`{cyan  [?] Try to Follow, Like and Comment All Account In Hashtag: #${ranhastag}}`);
+    console.log(chalk`{yellow \n [?] Try to Login . . .}`)
+    var account = await doLogin(User)
+                        .catch((error) => {
+                          assert.isNotOk(error, 'Promise error');
+                          done();
+                        })
+    console.log(chalk`{green  [!] Login Success!}`)
+  } catch (error) {
+    throw new Error('Something went wrong!!! --> ', error)
+  }
+  try {
+    const ranhastag = hastag[Math.floor(Math.random() * hastag.length)];
+    var text = fs.readFileSync("./commentText.txt", "utf-8").split("|");
+    const feed = new Client.Feed.TaggedMedia(account.session, ranhastag);
+    console.log(chalk`{cyan  [?] Try to Follow, Like and Comment All Account In Hashtag: #${ranhastag}}`);
     var cursor;
     var count = 0;
     do {
       if (cursor) feed.setCursor(cursor);
-      count++;  
+      count++;
       var media = await feed.get();
       media = _.chunk(media, accountsPerDelay);
       for (media of media) {
         var timeNow = new Date();
         timeNow = `${timeNow.getHours()}:${timeNow.getMinutes()}:${timeNow.getSeconds()}`
-        await Promise.all(media.map(async(media)=>{
+        await Promise.all(media.map(async (media) => {
           const ranText = text[Math.floor(Math.random() * text.length)];
           const resultAction = await doAction(account.session, media.params, ranText);
           console.log(chalk`[{magenta ${timeNow}}] {cyanBright @${media.params.account.username}} => ${resultAction}`);
@@ -150,8 +158,8 @@ const doMain = async (User, hastag, sleep, accountsPerDelay) => {
         await delay(sleep);
       }
       cursor = await feed.getCursor();
-    } while(feed.isMoreAvailable());
-  } catch(e) {
+    } while (feed.isMoreAvailable());
+  } catch (e) {
     console.log(e);
   }
 }
@@ -171,12 +179,13 @@ console.log(chalk`
       `);
 
 inquirer.prompt(question)
-.then(answers => {
-  var hastag = answers.hastag.split('|');
-  doMain({
-    username:answers.username, 
-    password:answers.password},hastag,answers.sleep,answers.accountsPerDelay);
-})
-.catch(e => {
-  console.log(e);
-})
+  .then(answers => {
+    var hastag = answers.hastag.split('|');
+    doMain({
+      username: answers.username,
+      password: answers.password
+    }, hastag, answers.sleep, answers.accountsPerDelay);
+  })
+  .catch(e => {
+    console.log(e);
+  })
