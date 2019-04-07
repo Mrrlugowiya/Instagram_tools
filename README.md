@@ -12,7 +12,9 @@ And this is collection of several developments that have been carried out so far
 ```
 $ git clone https://github.com/masokky/instagram-tools.git
 $ cd instagram-tools
-$ node index.js
+$ git checkout Nodejs
+$ npm install
+$ npm start
 ```
 
 ----
