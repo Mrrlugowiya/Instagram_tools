@@ -107,7 +107,7 @@ const doAction = async (session, params, text) => {
 
 const doMain = async (User, hastag, sleep, accountsPerDelay) => {
   try{
-    var text = fs.readFileSync("./commentText.txt","utf-8").split("|");
+    var text = fs.readFileSync("./src/commentText.txt","utf-8").split("|");
     console.log(chalk`{yellow \n [?] Try to Login . . .}`)
     var account = await doLogin(User);
     console.log(chalk`{green [!] Login Success!}`)

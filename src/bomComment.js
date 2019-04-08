@@ -127,7 +127,7 @@ async function ngeComment(session, id, text){
 
 const Excute = async function(User, TargetUsername, sleep, mediasPerDelay){
 	try {
-		var Text = fs.readFileSync("./commentText.txt","utf-8").split("|");
+		var Text = fs.readFileSync("./src/commentText.txt","utf-8").split("|");
 		/** TRY TO LOGIN **/
 		console.log('\n');
 		console.log('[?] Try to Login . . .');

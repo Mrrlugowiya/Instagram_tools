@@ -127,7 +127,7 @@ const doMain = async (User, locationid, sleep, accountsPerDelay) => {
     console.log(chalk`\n{green [?] Try to Login ....}`);
     var account = await doLogin(User);
     console.log(chalk`{bold.green [!] Login Success!}`)
-    const text = fs.readFileSync("commentText.txt","utf-8").split("|");
+    const text = fs.readFileSync("./src/commentText.txt","utf-8").split("|");
     const feed = new Client.Feed.LocationMedia(account.session, locationid);
     console.log(chalk`{green [?] Try Follow, Like and Comment All Account In LocationId: ${locationid}\n}`);
     var cursor;

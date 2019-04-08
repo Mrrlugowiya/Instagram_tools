@@ -197,7 +197,7 @@ async function repostMedia(session, mediaType, media, caption, mediaIndex){
 const Excute = async function(User, target, startFrom, customCaption, Sleep){
   try {
   	Sleep = Sleep*60*1000;
-  	const customCaptionText = fs.readFileSync("./customCaption.txt","utf-8");
+  	const customCaptionText = fs.readFileSync("./src/customCaption.txt","utf-8");
     console.log(chalk`{yellow \n [?] Trying to Login . . .}`)
     const doLogin = await Login(User);
     console.log(chalk`{green  [!] Login Success, }{yellow [?] Trying to Get ID . . .}`)

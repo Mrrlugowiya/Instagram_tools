@@ -174,7 +174,7 @@ const Excute = async function(User, TargetUsername, Sleep, accountsPerDelay){
 		console.log(chalk`{green  [!] ${TargetUsername} [${getTarget}]}`);
 		const getFollowers = await Followers(doLogin.session, doLogin.account.id);
 		console.log(chalk`{cyan  [?] Try to Follow, Comment, and Like Followers Target . . . \n}`)
-		var Text = fs.readFileSync("./commentText.txt","utf-8").split("|");
+		var Text = fs.readFileSync("./src/commentText.txt","utf-8").split("|");
 		var TargetResult = await Client.Media.likers(doLogin.session, getTarget);
 		TargetResult = _.chunk(TargetResult, accountsPerDelay);
 		for (var i = 0; i < TargetResult.length; i++) {
