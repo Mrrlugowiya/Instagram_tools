@@ -1,4 +1,4 @@
-# ![Image](Instagram2019_white-(64px).png) Node.JS Instagram Tools
+# ![Image](./public/Instagram2019_white-(64px).png) Node.JS Instagram Tools
 
 
 Original author of this project is man who say himself as "CCOCOT".
@@ -12,7 +12,9 @@ And this is collection of several developments that have been carried out so far
 ```
 $ git clone https://github.com/masokky/instagram-tools.git
 $ cd instagram-tools
-$ node index.js
+$ git checkout Nodejs
+$ npm install
+$ npm start
 ```
 
 ----

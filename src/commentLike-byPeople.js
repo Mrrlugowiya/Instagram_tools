@@ -171,7 +171,7 @@ const Followers = async function(session, id){
 
 const Excute = async function(User, TargetUsername, Sleep, accountsPerDelay){
   try {
-    var Text = fs.readFileSync("./commentText.txt","utf-8").split("|");
+    var Text = fs.readFileSync("./src/commentText.txt","utf-8").split("|");
     console.log(chalk`{yellow \n [?] Try to Login . . .}`)
     const doLogin = await Login(User);
     console.log(chalk`{green  [!] Login Succsess, }{yellow [?] Try To Get ID & Followers Target . . .}`)

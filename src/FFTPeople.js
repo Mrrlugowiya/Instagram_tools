@@ -50,7 +50,7 @@ const User = [
 {
   type:'input',
   name:'sleep',
-  message:'[>] Insert Sleep (MiliSeconds):',
+  message:'[>] Insert Sleep/Delay (MiliSeconds):',
   validate: function(value){
     value = value.match(/[0-9]/);
     if (value) return true;
@@ -60,11 +60,9 @@ const User = [
 ]
 
 const Login = async function(User){
-
   const Device = new Client.Device(User.username);
   const Storage = new Client.CookieMemoryStorage();
   const session = new Client.Session(Device, Storage);
-
   try {
     await Client.Session.create(Device, Storage, User.username, User.password)
     const account = await session.getAccount();
@@ -72,7 +70,6 @@ const Login = async function(User){
   } catch (err) {
     return Promise.reject(err);
   }
-
 }
 
 const Target = async function(username){
@@ -98,12 +95,12 @@ const Target = async function(username){
 
 }
 
-async function ngeFollow(session, id){
+async function ngefollow(session,accountId){
   try {
-    await Client.Relationship.create(session, id);
-    return true;
+    await Client.Relationship.create(session, accountId);
+    return true
   } catch (e) {
-    return false;
+    return false
   }
 }
 
@@ -125,16 +122,7 @@ async function ngeLike(session, id){
   }
 }
 
-async function ngeDM(session, users, text){
-		try{
-    await Client.Thread.configureText(session, users, text)
-        return true;
-  } catch(e) {
-        return false;
-  }
-}
-
-const CommentLikeDM = async function(session, accountId, text){
+const CommentAndLike = async function(session, accountId, text){
   var result;
 
   const feed = new Client.Feed.UserMedia(session, accountId);
@@ -147,17 +135,15 @@ const CommentLikeDM = async function(session, accountId, text){
 
   if (result.length > 0) {
     const task = [
-    ngeFollow(session, accountId),
+    ngefollow(session, accountId),
     ngeComment(session, result[0].params.id, text),
-	  ngeDM(session, accountId, text),
     ngeLike(session, result[0].params.id)
     ]
-    const [Follow,Comment,DM,Like] = await Promise.all(task);
+    const [Follow,Comment,Like] = await Promise.all(task);
     const printFollow = Follow ? chalk`{green Follow}` : chalk`{red Follow}`;
     const printComment = Comment ? chalk`{green Comment}` : chalk`{red Comment}`;
-	  const printDM = DM ? chalk`{green DM}` : chalk`{red DM}`;
     const printLike = Like ? chalk`{green Like}` : chalk`{red Like}`;
-    return chalk`{bold.green ${printFollow},${printComment},${printDM},${printLike} [${text}]}`;
+    return chalk`{bold.green ${printFollow},${printComment},${printLike} [${text}]}`;
   }
   return chalk`{bold.white Timeline Kosong (SKIPPED)}`
 };
@@ -189,7 +175,7 @@ const Excute = async function(User, TargetUsername, Sleep, accountsPerDelay){
     const getTarget = await Target(TargetUsername);
     console.log(chalk`{green  [!] ${TargetUsername}: [${getTarget.id}] | Followers: [${getTarget.followers}]}`)
     const getFollowers = await Followers(doLogin.session, doLogin.account.id)
-    console.log(chalk`{cyan  [?] Try to Follow, Comment, DM, and Like Followers Target . . . \n}`)
+    console.log(chalk`{cyan  [?] Try to Follow, Comment, and Like Followers Target . . . \n}`)
     const Targetfeed = new Client.Feed.AccountFollowers(doLogin.session, getTarget.id);
     var TargetCursor;
     do {
@@ -201,15 +187,15 @@ const Excute = async function(User, TargetUsername, Sleep, accountsPerDelay){
         timeNow = `${timeNow.getHours()}:${timeNow.getMinutes()}:${timeNow.getSeconds()}`
         await Promise.all(TargetResult[i].map(async(akun) => {
           if (!getFollowers.includes(akun.id) && akun.params.isPrivate === false) {
-			      var Text = fs.readFileSync('commentText.txt', 'utf8').split('|');
+	    var Text = fs.readFileSync('./src/commentText.txt', 'utf8').split('|');
             var ranText = Text[Math.floor(Math.random() * Text.length)];
-            const ngeDo = await CommentLikeDM(doLogin.session, akun.id, ranText)
+            const ngeDo = await CommentAndLike(doLogin.session, akun.id, ranText)
             console.log(chalk`[{magenta ${timeNow}}] {bold.green [>]}${akun.params.username} => ${ngeDo}`)
           } else {
             console.log(chalk`[{magenta ${timeNow}}] {bold.yellow [SKIP]}${akun.params.username} => PRIVATE OR ALREADY FOLLOWED`)
           }
         }));
-        console.log(chalk`{yellow \n [#][>][{cyan Account: ${User.username}}][{cyan Target: @${TargetUsername}}] Delay For ${Sleep} MiliSeconds [<][#] \n}`)
+        console.log(chalk`{yellow \n [#][>][{cyan Account: ${User.username}}][{cyan Target: @${TargetUsername}}] Delay For ${Sleep} MiliSeconds [<][#] \n}`);
         await delay(Sleep);
       }
       TargetCursor = await Targetfeed.getCursor();
@@ -223,16 +209,16 @@ console.log(chalk`
   {bold.cyan
   —————————————————— [INFORMATION] ————————————————————
 
-  [?] {bold.green FFTPeople - with DM!}
-  
+  [?] {bold.green FFTauto | Using Account/User Target!}
+
   ——————————————————  [THANKS TO]  ————————————————————
   [✓] CODE BY CYBER SCREAMER CCOCOT (ccocot@bc0de.net)
-  [✓] FIXING & TETESTING BY ZHEPENGUMBARA (@zhe_pengumbara)
+  [✓] TESTING BY ZHEPENGUMBARA (@zhe_pengumbara)
   [✓] CCOCOT.CO | BC0DE.NET | NAONLAH.NET | WingkoColi
   [✓] SGB TEAM REBORN | Zerobyte.id | ccocot@bc0de.net 
   —————————————————————————————————————————————————————}
       `);
-//zhepengumbara
+
 inquirer.prompt(User)
 .then(answers => {
   Excute({
